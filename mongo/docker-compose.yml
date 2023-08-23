@@ -1,0 +1,35 @@
+version:  latest
+
+services:
+  # Database - Mongo DB
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    volumes:
+      - ./data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - backend
+
+  nodejs:
+    image: nitro-mongodb
+    ports:
+      - 3000:3000
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  data:
